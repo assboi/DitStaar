@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Home</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{{url_for('static', filename='css/layout.css')}}">
+</head>
+
+<body>
+
+    <!-- ALERT when something is wrong -->
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    <div class="container"></div>
+    <div class="alert alert-danger">
+        {% for message in messages %}
+        {{ message }}
+        {% endfor %}
+    </div>
+    {% endif %}
+    {% endwith %}
+    <!-- ALERT when something is wrong -->
+
+    {% block navbar %}
+    <!-- NAVBAR -->
+    <nav id="myNavbar" class="navbar sticky-top navbar-expand-lg navbar-dark bg-dark">
+        <a class="navbar-brand" href="#">
+            <img src="{{url_for('static', filename='img/dit_staar_logo_1.png')}}" width="120" height="30" alt="logo">
+        </a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav"
+            aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link nav-itm" href="{{url_for('login')}}">Login</a>
+                </li>
+            </ul>
+        </div>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="#oss">Om oss</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#turer">Turer</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#bilder">Profiler</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+    <!-- NAVBAR -->
+    {% endblock %}
+
+    {% block content %}
+    {% endblock %}
+
+        {% block footer %}
+        <!-- FOOTER -->
+        <footer class="page-footer font-small blue p-3">
+            <div class="footer-copyright text-center py-3">© 2018 Copyright:
+                <p>Dit Staar Org.</p>
+            </div>
+        </footer>
+        <!-- FOOTER -->
+        {% endblock %}
+
+        <script src="http://maps.googleapis.com/maps/api/js?key=AIzaSyA-z2Kd25PFPMs3gCSpC6bzPBazgSWtLGY"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
+        <script src="{{url_for('static', filename='js/script.js')}}"></script>
+
+</body>
+
+</html>

@@ -1,145 +1,81 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>Home</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
-    <link rel="stylesheet" href="{{url_for('static', filename='css/layout.css')}}">
-</head>
-    <body>
+{% extends "base.html" %}
+{% block title %}LOGIN{% endblock %}
+{% block head %}
+    {{ super() }}
+{% endblock %}
 
-    <!-- ALERT when something is wrong -->
-    {% with messages = get_flashed_messages() %}
-    {% if messages %}
-    <div class="container"></div>
-    <div class="alert alert-danger">
-        {% for message in messages %}
-            {{ message }}
-        {% endfor %}
+{% block content %}
+
+<div class="container-fluid">
+    <div class="row">
+        <img class="img-responsive col-12 px-0 mb-5" src="{{url_for('static', filename='img/forside_1.png')}}" alt="gruppebilde">
     </div>
-    {% endif %}
-    {% endwith %}
-    <!-- ALERT when something is wrong -->
-
-    <!-- 59.09578, 7.212224 -->
-
-    <!-- NAVBAR -->
-            <nav id="myNavbar" class="navbar sticky-top navbar-expand-lg navbar-dark bg-dark">
-                <a class="navbar-brand" href="#">
-                    <img src="{{url_for('static', filename='img/dit_staar_logo_1.png')}}" width="120" height="30" alt="">
-                </a>
-                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav"
-                    aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse" id="navbarNav">
-                    <ul class="navbar-nav ml-auto">
-                        <li class="nav-item">
-                            <a class="nav-link" href="#oss">Om oss</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#turer">Turer</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#bilder">Profiler</a>
-                        </li>
-                    </ul>
-                </div>
-            </nav>
-    <!-- NAVBAR -->
-
-
-    <!-- CONTENT START-->
-    <div class="container-fluid">
-        <div class="row">
-            <img class="img-responsive col-12 px-0 mb-5" src="{{url_for('static', filename='img/forside_1.png')}}" alt="gruppebilde">
+    <div class="row justify-content-center text-center mt-5 mb-5">
+        <div class="col-lg-6 col-md-8 mt-4">
+            <h2>Om Oss</h2>
+            <p>Vi er en gruppe engasjerte turgåere som med litt alkohol i tanken
+                kan bestige et hvert fjell hvor enn det måtte være. 
+                Vi har siden den spede begynnelse hatt en stor glede av hver et
+                skritt vi har tatt i den flotte norske naturen.
+            </p>
+            <img id="turer" class="rounded img-fluid mt-5 mb-5" style="max-width:100%; height: 360px" src="{{url_for('static', filename='img/gruppebilde.jpg')}}" alt="">
         </div>
-        <div class="row justify-content-center text-center mt-5 mb-5">
-            <div class="col-lg-6 col-md-8 mt-4">
-                <h2>Om Oss</h2>
-                <p>Vi er en gruppe engasjerte turgåere som med litt alkohol i tanken
-                    kan bestige et hvert fjell hvor enn det måtte være. 
-                    Vi har siden den spede begynnelse hatt en stor glede av hver et
-                    skritt vi har tatt i den flotte norske naturen.
-                </p>
-                <img id="turer" class="rounded img-fluid mt-5 mb-5" style="max-width:100%; height: 360px" src="{{url_for('static', filename='img/gruppebilde.jpg')}}" alt="">
-            </div>
+    </div>
+    <div class="row justify-content-center text-center mt-5 mb-5">
+        <div class="col-lg-2 col-md-12 mt-5 mb-5">
+            <h2>Skrubsbu</h2>
+            <p>Lorum ipsum fasdasdfasdfasdfasdf asdfgasdfkj aslkdfjalk sjdf
+                askjdfkas kasjdfkjøasldk aksdfkøjasd kalsjdfkl
+                askdjfklajsd lkasjdjfkljasd klajsdlfkj asalksdjflkasd
+            </p>
         </div>
-        <div class="row justify-content-center text-center mt-5 mb-5">
-            <div class="col-lg-2 col-md-12 mt-5 mb-5">
-                <h2>Skrubsbu</h2>
-                <p>Lorum ipsum fasdasdfasdfasdfasdf asdfgasdfkj aslkdfjalk sjdf
-                    askjdfkas kasjdfkjøasldk aksdfkøjasd kalsjdfkl
-                    askdjfklajsd lkasjdjfkljasd klajsdlfkj asalksdjflkasd
-                </p>
-            </div>
-                <div class="col-lg-3 col-md-12 mt-5 mb-5">
-                    <div id="map1" style="max-width: 100%; height: 400px"></div>
-                </div>
-            <div class="col-lg-2 col-md-12 mt-5 mb-5">
-                <h2>Taumevatn</h2>
-                <p>Lorum ipsum fasdasdfasdfasdfasdf asdfgasdfkj aslkdfjalk sjdf
-                    askjdfkas kasjdfkjøasldk aksdfkøjasd kalsjdfkl
-                    askdjfklajsd lkasjdjfkljasd klajsdlfkj asalksdjflkasd
-                </p>
-            </div>
             <div class="col-lg-3 col-md-12 mt-5 mb-5">
-                <div id="map2" style="max-width: 100%; height: 400px"></div>
+                <div id="map1" style="max-width: 100%; height: 400px"></div>
             </div>
+        <div class="col-lg-2 col-md-12 mt-5 mb-5">
+            <h2>Taumevatn</h2>
+            <p>Lorum ipsum fasdasdfasdfasdfasdf asdfgasdfkj aslkdfjalk sjdf
+                askjdfkas kasjdfkjøasldk aksdfkøjasd kalsjdfkl
+                askdjfklajsd lkasjdjfkljasd klajsdlfkj asalksdjflkasd
+            </p>
         </div>
-        <div id="bilder" class="row justify-content-center text-center mt-10 mb-5">
-                <h1>Profiler</h1>
+        <div class="col-lg-3 col-md-12 mt-5 mb-5">
+            <div id="map2" style="max-width: 100%; height: 400px"></div>
         </div>
-        <div class="row justify-content-center text-center mt-5 mb-5">
-                <div class="col-lg-3 col-md-6 mb-2">
-                    <img class="rounded" style="max-width:100%; height: 350px" src="{{url_for('static', filename='img/profil_Skogen(720x960).png')}}" alt="">
-                </div>
-                <div class="col-lg-3 col-md-6 mb-2">
-                    <img class="rounded" style="max-width:100%; height: 350px" src="{{url_for('static', filename='img/profil_J1(720x960).png')}}" alt="">
-                </div>
-                <div class="col-lg-3 col-md-6 mb-2">
-                    <img class="rounded" style="max-width:100%; height: 350px" src="{{url_for('static', filename='img/profil_Dyrnes(720x960).png')}}" alt="">
-                </div>
-                <div class="col-lg-3 col-md-6 mb-2">
-                    <img class="rounded" style="max-width:100%; height: 350px" src="{{url_for('static', filename='img/profil_Henning(720x960).png')}}" alt="">
-                </div>
-        </div>
-        <div class="row justify-content-center text-center mt-5 mb-5">
-                <div class="col-lg-3 col-md-6 mb-2">
-                    <img class="rounded" style="max-width:100%; height: 400px" src="{{url_for('static', filename='img/profil_Mats(540x960).png')}}" alt="">
-                </div>
-                <div class="col-lg-3 col-md-6 mb-2">
-                    <img class="rounded" style="max-width:100%; height: 400px" src="{{url_for('static', filename='img/profil_Asle(540x960).png')}}" alt="">
-                </div>
-                <div class="col-lg-3 col-md-6 mb-2">
-                    <img class="rounded" style="max-width:100%; height: 400px" src="{{url_for('static', filename='img/presteVoung(540x960).png')}}" alt="">
-                </div>
-                <div class="col-lg-3 col-md-6 mb-2">
-                    <img class="rounded" style="max-width:100%; height: 400px" src="{{url_for('static', filename='img/Mats+Roy=sant.png')}}" alt="">
-                </div>
-        </div>
-        
-    <!-- CONTENT END-->
+    </div>
+    <div id="bilder" class="row justify-content-center text-center mt-10 mb-5">
+            <h1>Profiler</h1>
+    </div>
+    <div class="row justify-content-center text-center mt-5 mb-5">
+            <div class="col-lg-3 col-md-6 mb-2">
+                <img class="rounded" style="max-width:100%; height: 350px" src="{{url_for('static', filename='img/profil_Skogen(720x960).png')}}" alt="">
+            </div>
+            <div class="col-lg-3 col-md-6 mb-2">
+                <img class="rounded" style="max-width:100%; height: 350px" src="{{url_for('static', filename='img/profil_J1(720x960).png')}}" alt="">
+            </div>
+            <div class="col-lg-3 col-md-6 mb-2">
+                <img class="rounded" style="max-width:100%; height: 350px" src="{{url_for('static', filename='img/profil_Dyrnes(720x960).png')}}" alt="">
+            </div>
+            <div class="col-lg-3 col-md-6 mb-2">
+                <img class="rounded" style="max-width:100%; height: 350px" src="{{url_for('static', filename='img/profil_Henning(720x960).png')}}" alt="">
+            </div>
+    </div>
+    <div class="row justify-content-center text-center mt-5 mb-5">
+            <div class="col-lg-3 col-md-6 mb-2">
+                <img class="rounded" style="max-width:100%; height: 400px" src="{{url_for('static', filename='img/profil_Mats(540x960).png')}}" alt="">
+            </div>
+            <div class="col-lg-3 col-md-6 mb-2">
+                <img class="rounded" style="max-width:100%; height: 400px" src="{{url_for('static', filename='img/profil_Asle(540x960).png')}}" alt="">
+            </div>
+            <div class="col-lg-3 col-md-6 mb-2">
+                <img class="rounded" style="max-width:100%; height: 400px" src="{{url_for('static', filename='img/presteVoung(540x960).png')}}" alt="">
+            </div>
+            <div class="col-lg-3 col-md-6 mb-2">
+                <img class="rounded" style="max-width:100%; height: 400px" src="{{url_for('static', filename='img/Mats+Roy=sant.png')}}" alt="">
+            </div>
+    </div>
 
-    <!-- FOOTER -->
-    <footer class="page-footer font-small blue p-3">
-        <div class="footer-copyright text-center py-3">© 2018 Copyright:
-            <p>Dit Staar Org.</p>
-        </div>
-    </footer>
-    <!-- FOOTER -->
-
-    <script src="http://maps.googleapis.com/maps/api/js?key=AIzaSyA-z2Kd25PFPMs3gCSpC6bzPBazgSWtLGY"></script>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
-<script src="{{url_for('static', filename='js/script.js')}}"></script>
-    
-    </body>
-</html>
-
+{% endblock %}
 
 
 
