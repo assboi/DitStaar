@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}kart{% endblock %}
+{% block head %}
+    {{ super() }}
+    <link rel="stylesheet" href="{{url_for('static', filename='css/map.css')}}">
+{% endblock %}
+
+{% block content %}
+    <div class="form-row justify-content-center mt-3">
+        <div class="col-3">
+            <input id="address" type="text" class="form-control" placeholder="Sandnes">
+        </div>
+            <button id="go" type="submit" class="btn btn-sm btn-dark ml-2"> GO </button>
+            <button id="slett" type="submit" class="btn btn-sm btn-danger ml-2 pr-2 pl-2"> X </button>
+    </div>
+
+    <div class="container mt-3">
+    <div id="map" style="width: 100%; height: 600px;"></div>
+    </div>
+    <form>
+        <div class="form-row justify-content-center mt-3">
+            <div class="col-4">
+                <input type="text" class="form-control" value="Navn på tur">
+            </div>
+            <div class="col-3">
+                <input type="text" class="form-control" placeholder="Distance" disabled>
+            </div>
+            <button type="submit" class="btn btn-sm btn-dark ml-2">Lagre</button>
+        </div>
+    </form>
+
+    <div class="row justify-content-center mt-3">
+        <div class="col-2">
+            <img id="mygif" class="hide" src="{{url_for('static', filename='img/skog.gif')}}" alt="klapp i hendene" style="width: 150px; height: 200px;">
+        </div>
+        <div class="col-2">
+            <button id="mybtn" class="btn btn-success mt-2">Give me som love</button>
+        </div>
+    </div>
+
+{% endblock %}

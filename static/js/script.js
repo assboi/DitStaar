@@ -20,7 +20,7 @@ $("#myNavbar a").on('click', function (event) {
     }
 });
 
-$(Document).ready( function() {
+window.onload = function() {
     var map1 = new google.maps.Map(document.getElementById("map1"),
         {
             center: { lat: 59.09578, lng: 7.212224},
@@ -48,4 +48,4 @@ $(Document).ready( function() {
                 map: map2
             }
         );
-});
+}
