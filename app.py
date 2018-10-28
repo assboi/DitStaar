@@ -1,31 +1,118 @@
-from flask import Flask, render_template, Response, request, url_for, session, abort, redirect, flash
+from flask import render_template, url_for, session, abort, redirect, flash
+from flask import Flask, g
+from flask import request, Response, jsonify
 from flask_login import LoginManager, UserMixin, login_required, \
                         login_user, logout_user
+from werkzeug.security import check_password_hash, generate_password_hash
 import time
+import json
+from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
+# Login
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = "login"
-
 app.config["SECRET_KEY"] = "mysecret"
 
-class User(UserMixin):
-    def __init__(self, id):
-        self.id = id
-        self.name = "user" + str(id)
-        self.password = "secret"
+# db stuff
+app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///C:\\Users\\asleb\\sqlite\\ditstaar.db"
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+db = SQLAlchemy(app)
 
-    def __repr__(self):
-        return "%d%s%s" % (self.id, self.name, self.password)
 
-user = User(1)
+# TODO Lag en database for brukere med brukernavn og passord
+# TODO Lag en database for turer
+# TODO app.config.from_pyfile('config.cfg')
+
+
+class Tur(db.Model):
+    __tablename__ = "adventure"
+
+    aid = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    name = db.Column(db.String, nullable=False)
+    distance = db.Column(db.Integer, nullable=False)
+    # route = # need to store and object of the route
+
+    def __init__(self, name, distance):
+        self.name = name
+        self.distance = distance
+        
+class User_admin(db.Model):
+    __tablename__ = 'user'
+    username = db.Column(db.String(50), primary_key=True)
+    password = db.Column(db.String(200))
+
+    def __init__(self, username, password):
+        self.username = username
+        self.set_password(password)
+
+    def set_password(self, password):
+         self.password = generate_password_hash(password)
+
+    def check_password(self, password):
+        return check_password_hash(self.password, password)
+
+
+def add_user(username, password):
+    user = User_admin(username, password)
+    db.session.add(user)
+    db.session.commit()
+
+
+def add_testUser():
+    username = "ditstaar"
+    password = "ditstaar"
+    if not_inDatabase(username):
+        u = User_admin(username, password)
+        db.session.add(u)
+        db.session.commit()
+
+def getUsername():
+    return session["username"]
+
+
+def valid_login(username, password):
+    user = User_admin.query.filter_by(username=username).first()
+    if user:
+        return user.check_password(password)
+    return False
+
+
+def not_inDatabase(username):
+    query = User_admin.query.filter_by(username=username)
+    for each in query:
+        if username == each.username:
+            return False
+    return True
+
 
 
 @app.route('/')
 @login_required
 def index():
-    return render_template("index.html")
+    return render_template("index.html", )
+
+@app.route('/adventure', methods=['POST', 'GET'])
+def storeAdventure():
+    if request.method == 'POST':
+        name = request.form.get("name")
+        distance = request.form.get("distance")
+        newTrip = Tur(name=name, distance=distance)
+        db.session.add(newTrip)
+        db.session.commit()
+        # flash(u'Saved to database', 'alert-success')
+        return json.dumps({"status": "success", "name": name, "distance": distance})
+    if request.method == 'GET':
+        # get stuff out of the database
+        response = []
+        tripData = Tur.query.all()
+        for trip in tripData:
+            response.append({
+                "name": trip.name,
+                "distance": trip.distance
+            })
+        return json.dumps(response)
 
 
 @app.route('/login', methods=["GET", "POST"])

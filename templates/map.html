@@ -15,27 +15,47 @@
     </div>
 
     <div class="container mt-3">
-    <div id="map" style="width: 100%; height: 600px;"></div>
+        <div id="map" style="width: 100%; height: 500px;"></div>
     </div>
-    <form>
-        <div class="form-row justify-content-center mt-3">
-            <div class="col-4">
-                <input type="text" class="form-control" value="Navn på tur">
-            </div>
-            <div class="col-3">
-                <input type="text" class="form-control" placeholder="Distance" disabled>
-            </div>
-            <button type="submit" class="btn btn-sm btn-dark ml-2">Lagre</button>
+    <div class="form-row justify-content-center mt-3">
+        <div class="col-4">
+            <input id="nameInput" autocomplete="off" type="text" class="form-control" placeholder="Navn på tur">
         </div>
-    </form>
+        <div class="col-3">
+            <input id="distance" type="text" autocomplete="off" class="form-control" placeholder="0.00 km" disabled>
+        </div>
+        <button id="savebtn" class="btn btn-sm btn-dark ml-2">Lagre</button>
+    </div>
 
-    <div class="row justify-content-center mt-3">
-        <div class="col-2">
-            <img id="mygif" class="hide" src="{{url_for('static', filename='img/skog.gif')}}" alt="klapp i hendene" style="width: 150px; height: 200px;">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-6">
+                <ul id="turListe" class="list-group mt-5"></ul>
+            </div>
         </div>
-        <div class="col-2">
-            <button id="mybtn" class="btn btn-success mt-2">Give me som love</button>
+        <!-- PAGINATION -->
+        <div class="row justify-content-center mt-4">
+            <nav>
+                <ul class="pagination">
+                    <li class="page-item">
+                        <a class="page-link" href="#" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                            <span class="sr-only">Previous</span>
+                        </a>
+                    </li>
+                    <li class="page-item"><a class="page-link" href="#">1</a></li>
+                    <li class="page-item"><a class="page-link" href="#">2</a></li>
+                    <li class="page-item"><a class="page-link" href="#">3</a></li>
+                    <li class="page-item">
+                        <a class="page-link" href="#" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                            <span class="sr-only">Next</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
         </div>
     </div>
+    
 
 {% endblock %}

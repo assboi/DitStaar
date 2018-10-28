@@ -12,7 +12,7 @@ $("#myNavbar a").on('click', function (event) {
         // The optional number (800) specifies the number of milliseconds it takes to scroll to the specified area
         $('html, body').animate({
             // -50 will account for the sticky header
-            scrollTop: $(hash).offset().top-50
+            scrollTop: $(hash).offset().top-40
         }, 1000, function () {
 
             // Add hash (#) to URL when done scrolling (default click behavior)

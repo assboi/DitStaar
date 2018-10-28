@@ -14,7 +14,7 @@
 
 <body>
 
-    <!-- ALERT when something is wrong -->
+    <!-- ALERT -->
     {% with messages = get_flashed_messages() %}
     {% if messages %}
     <div id="error-message" class="alert alert-danger" style="margin: 0 auto; text-align: center;">
@@ -24,7 +24,7 @@
     </div>
     {% endif %}
     {% endwith %}
-    <!-- ALERT when something is wrong -->
+    <!-- ALERT -->
 
     {% block navbar %}
     <!-- NAVBAR -->
