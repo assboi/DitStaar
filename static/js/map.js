@@ -16,24 +16,24 @@ $(function () {
         // have to initialise poly after removing
         initPoly();
         // sette distanse aktivt til 0.00km
-        $('#distance').val("0.00 km")
-    });
+        $('#distance').val("0.00 km");
+    });    
 
-    $.ajax({
-        url: "/adventure",
-        type: "GET",
-        dataType: 'json',
-        success: function (adventures) {
-            $.each(adventures, function(i, adventure) {
-                list.append('<button type="button" class="list-group-item list-group-item-action">'
-                            + adventure.name + ', ' + adventure.distance + '</button>');
-            });
-        },
-        error: function (error) {
-            alert("error saving to database")
-            console.log(error)
-        }
-    });
+    // $.ajax({
+    //     url: "/adventure",
+    //     type: "GET",
+    //     dataType: 'json',
+    //     success: function (adventures) {
+    //         $.each(adventures, function(i, adventure) {
+    //             list.append('<button type="button" class="list-group-item list-group-item-action">'
+    //                         + adventure.name + ', ' + adventure.distance + '</button>');
+    //         });
+    //     },
+    //     error: function (error) {
+    //         alert("error saving to database")
+    //         console.log(error)
+    //     }
+    // });
 
     save.on("click", function() {
         var adventure = {

@@ -1,8 +1,8 @@
 from flask import render_template, url_for, session, abort, redirect, flash
 from flask import Flask, g
 from flask import request, Response, jsonify
-from flask_login import LoginManager, UserMixin, login_required, \
-                        login_user, logout_user
+# from flask_login import LoginManager, UserMixin, login_required, \
+#                         login_user, logout_user
 from werkzeug.security import check_password_hash, generate_password_hash
 import time
 import json
@@ -10,20 +10,11 @@ from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
 # Login
-login_manager = LoginManager()
-login_manager.init_app(app)
-login_manager.login_view = "login"
-app.config["SECRET_KEY"] = "mysecret"
-
-# db stuff
-app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///C:\\Users\\asleb\\sqlite\\ditstaar.db"
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+# login_manager = LoginManager()
+# login_manager.init_app(app)
+# login_manager.login_view = "login"
+app.config.from_pyfile('config.cfg')
 db = SQLAlchemy(app)
-
-
-# TODO Lag en database for brukere med brukernavn og passord
-# TODO Lag en database for turer
-# TODO app.config.from_pyfile('config.cfg')
 
 
 class Tur(db.Model):
@@ -38,7 +29,7 @@ class Tur(db.Model):
         self.name = name
         self.distance = distance
         
-class User_admin(db.Model):
+class UserAdmin(db.Model):
     __tablename__ = 'user'
     username = db.Column(db.String(50), primary_key=True)
     password = db.Column(db.String(200))
@@ -53,9 +44,8 @@ class User_admin(db.Model):
     def check_password(self, password):
         return check_password_hash(self.password, password)
 
-
 def add_user(username, password):
-    user = User_admin(username, password)
+    user = UserAdmin(username, password)
     db.session.add(user)
     db.session.commit()
 
@@ -64,7 +54,7 @@ def add_testUser():
     username = "ditstaar"
     password = "ditstaar"
     if not_inDatabase(username):
-        u = User_admin(username, password)
+        u = UserAdmin(username, password)
         db.session.add(u)
         db.session.commit()
 
@@ -72,26 +62,32 @@ def getUsername():
     return session["username"]
 
 
+def in_session():
+    if 'username' in session:
+        return True
+    return False
+
+
 def valid_login(username, password):
-    user = User_admin.query.filter_by(username=username).first()
+    user = UserAdmin.query.filter_by(username=username).first()
     if user:
         return user.check_password(password)
     return False
 
 
 def not_inDatabase(username):
-    query = User_admin.query.filter_by(username=username)
+    query = UserAdmin.query.filter_by(username=username)
     for each in query:
         if username == each.username:
             return False
     return True
 
-
-
 @app.route('/')
-@login_required
 def index():
-    return render_template("index.html", )
+    if in_session():
+        return render_template("index.html", username=getUsername())
+    flash("You have to log in")
+    return render_template("login.html")
 
 @app.route('/adventure', methods=['POST', 'GET'])
 def storeAdventure():
@@ -118,47 +114,54 @@ def storeAdventure():
 @app.route('/login', methods=["GET", "POST"])
 def login():
     if request.method == "POST":
-        time.sleep(1) # vis en loading gif
+        time.sleep(1.5) # vis en loading gif
         username = request.form.get("username")
         password = request.form.get("password")
-        if password == "secret":
-            id = username.split("user")[1]
-            user = User(id)
-            login_user(user)
-            return render_template("index.html")
+        if valid_login(username, password):
+            session['username'] = username
+            return render_template("index.html", username=username)
         else:
-            flash("Wrong username or password")
+            flash("You have to log in")
             return render_template("login.html")
     return render_template("login.html")
 
 
 @app.route("/logout")
-@login_required
 def logout():
-    logout_user()
+    session.pop('username', None)
     return render_template("login.html")
+
+def getTrips():
+    data = []
+    query = Tur.query.all()
+    for trip in query:
+        data.append({
+            "name": trip.name,
+            "distance": trip.distance
+        })
+    return data
 
 
 @app.route('/map')
-@login_required
 def map():
-    return render_template('map.html')
+    trips = getTrips()
+    if in_session():
+        return render_template('map.html', username=getUsername(), trips=trips)
+    flash("You have to log in")
+    return render_template("index.html")
 
 # handle login failed
 @app.errorhandler(401)
 def page_not_found(e):
     return Response('<p>Login failed</p>')
 
-@app.route('/secret')
-@login_required
-def secret():
-    return "you are logged in"
-
-
-@login_manager.user_loader
-def load_user(userid):
-    return User(userid)
+# User = User(1)
+# @login_manager.user_loader
+# def load_user(userid):
+#     return User(userid)
 
 
 if __name__ == '__main__':
+    #db.create_all()
+    #add_testUser()
     app.run(debug=True, host="0.0.0.0", port=4000)
