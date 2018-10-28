@@ -31,63 +31,16 @@
         <div class="row justify-content-center">
             <div class="col-6">
                 <ul id="turListe" class="list-group mt-5">
-                {% for trip in trips %}
-                {% if loop.index < 11 %}
-                    <button class="list-group-item list-group-item-action"> {{trip.name}}, {{trip.distance}} </button>
-                {% endif %} 
-                {% endfor %}
                 </ul>
             </div>
         </div>
 
-        <!-- PAGINATION -->
-        <div class="row justify-content-center mt-4">
-            <nav aria-label="...">
-            <ul id="paginator" class="pagination pagination-sm">
-                <li class="page-item">
-                    <a id="tab1" class="page-link">1</a>
-                </li>
-                {% for trip in trips %}
-                {% if loop.index is divisibleby 11 %}
-                    <li class="page-item"><a id="tab{{(loop.index // 10) + 1 }}" class="page-link">{{ (loop.index // 10) + 1 }}</a></li>
-                {% endif %}
-                {% endfor %}
-            </ul>       
+        <div class="container mt-3">
+            <div class="row justify-content-center">
+                <button id="prev" class="rounded btn btn-sm btn-secondary mr-1"> << prev </button>
+                <button id="next" class="rounded btn btn-sm btn-secondary ml-1"> next >> </button>
+            </div>
         </div>
 
-        <script>
-            $(function () {
-                 //$("#paginator").on("click", "li", function() {
-                   // list.empty();
-                    //list.append('{% for trip in trips %}');
-                    //list.append('{% if (loop.index) < 11 %}');
-                    //list.append('<li class="list-group-item">{{ trip.name }}, {{ trip.distance }}</li> {% endif %}{% endfor %}');
-                //});
-
-                $("#tab1").on("click", function () {
-                    list.empty();
-                    list.append('{% for trip in trips %}');
-                    list.append('{% if (loop.index) < 11 %}');
-                    list.append('<button class="list-group-item list-group-item-action">{{ trip.name }}, {{ trip.distance }}</button>{% endif %}{% endfor %}');
-                });
-
-                $("#tab2").on("click", function(){
-                    list.empty();
-                    list.append('{% for trip in trips %}');
-                    list.append('{% if (loop.index) < 21 %}');
-                    list.append('{% if (loop.index) > 10 %}');
-                    list.append('<button class="list-group-item list-group-item-action">{{ trip.name }}, {{ trip.distance }}</button> {% endif %}{% endif %}{% endfor %}');
-                });
-
-                $("#tab3").on("click", function(){
-                    list.empty();
-                    list.append('{% for trip in trips %}');
-                    list.append('{% if (loop.index) < 31 %}');
-                    list.append('{% if (loop.index) > 20 %}');
-                    list.append('<button class="list-group-item list-group-item-action">{{ trip.name }}, {{ trip.distance }}</button> {% endif %}{% endif %}{% endfor %}');
-                });
-
-            });
-        </script>
 
 {% endblock %}

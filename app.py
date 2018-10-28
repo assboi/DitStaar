@@ -6,6 +6,7 @@ from flask import request, Response, jsonify
 from werkzeug.security import check_password_hash, generate_password_hash
 import time
 import json
+import math
 from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
@@ -103,8 +104,14 @@ def storeAdventure():
         # get stuff out of the database
         response = []
         tripData = Tur.query.all()
+        count = 0
+        pagelimit = 5
         for trip in tripData:
+            count += 1
             response.append({
+                "page": math.floor(count / pagelimit) + 1,
+                "pagelimit": pagelimit,
+                "totalrecords": count,
                 "name": trip.name,
                 "distance": trip.distance
             })

@@ -1,7 +1,8 @@
 var map;
 var poly; // the line
-var markers = []; // Need markers?
+var markers = [];
 var path;
+var storage = [];
 
 $(function () {
     initMap();
@@ -9,6 +10,30 @@ $(function () {
     searchbtn = $("#go");
     save = $("#savebtn");
     list = $('#turListe');
+
+    var page = 1,
+        pagelimit = 5,
+        totalrecords = 0;
+
+    fetchData()
+
+    $("#prev").on("click", function() {
+        if (page > 1){
+            page--;
+            list.empty();
+            fetchData()
+        }
+        // console.log("page="+page+" pagelimit="+ pagelimit+ " totalrecods="+ totalrecords)
+    });
+
+    $("#next").on("click", function() {
+        if (page * pagelimit < totalrecords){
+            page++;
+            list.empty();
+            fetchData()
+        }
+        // console.log("page=" + page + " pagelimit=" + pagelimit + " totalrecods=" + totalrecords)
+    });
 
     deletebtn.on("click", function () {
         clearMarkers();
@@ -19,26 +44,46 @@ $(function () {
         $('#distance').val("0.00 km");
     });    
 
-    // $.ajax({
-    //     url: "/adventure",
-    //     type: "GET",
-    //     dataType: 'json',
-    //     success: function (adventures) {
-    //         $.each(adventures, function(i, adventure) {
-    //             list.append('<button type="button" class="list-group-item list-group-item-action">'
-    //                         + adventure.name + ', ' + adventure.distance + '</button>');
-    //         });
-    //     },
-    //     error: function (error) {
-    //         alert("error saving to database")
-    //         console.log(error)
-    //     }
-    // });
+function fetchData() {
+    $.ajax({
+        url: "/adventure",
+        type: "GET",
+        dataType: 'json',
+        success: function(trips) {
+            trips.forEach(function(trip) {
+                totalrecords = trip.totalrecords;
+                // console.log("page.trip:"+trip.page+" page:"+page)
+                console.log(trip.name)
+                if (trip.page === page){
+                    console.log()
+                    list.append('<button type="button" class="list-group-item list-group-item-action">'
+                    + trip.name + ', ' + trip.distance + '</button>');
+                }
+            });
+        },
+        error: function (error) {
+            alert("error saving to database")
+            console.log(error)
+        }
+    });
+}
 
     save.on("click", function() {
+        // nullstill felter
+        $('#distance').val("0.00 km");
+        $("#nameInput").val("Navn på tur")
+        // store polyline
+        str = ""
+        for (i=0; i<markers.length; i++) {
+            var temp = markers[i].getPosition();
+            str += temp + " : "
+        }
+
+        // Post request to save in database
         var adventure = {
             "name": $("#nameInput").val(),
-            "distance": $('#distance').val()
+            "distance": $('#distance').val(),
+            "route": str
         };
         $.ajax({
             url: "/adventure",
@@ -113,6 +158,7 @@ function geocodeAddress(geocoder, map) {
     }
     geocoder.geocode({ 'address': address }, function (results, status) {
         if (status === 'OK') {
+            console.log(results[0])
             map.setCenter(results[0].geometry.location);
         } else {
             alert('Geocode was not successful for the following reason: ' + status);
