@@ -1,67 +1,47 @@
 from flask import render_template, url_for, session, abort, redirect, flash
 from flask import Flask, g
 from flask import request, Response, jsonify
-# from flask_login import LoginManager, UserMixin, login_required, \
-#                         login_user, logout_user
-from werkzeug.security import check_password_hash, generate_password_hash
-import time
-import json
-import math
+
+import time, json, math, datetime
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import desc
+
+#import db classes
+from database.tur import Tur
+from database.user import Users
+
+#import routes
+from routes import *
 
 app = Flask(__name__)
-# Login
-# login_manager = LoginManager()
-# login_manager.init_app(app)
-# login_manager.login_view = "login"
+
+# Use blueprint to separate routes into different files
+app.register_blueprint(routes)
+
+# Get variables from config file
 app.config.from_pyfile('config.cfg')
+
+# Initialize SQLAlchemy
 db = SQLAlchemy(app)
 
+#blueprint register
 
-class Tur(db.Model):
-    __tablename__ = "adventure"
 
-    aid = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    name = db.Column(db.String, nullable=False)
-    distance = db.Column(db.Integer, nullable=False)
-    # route = # need to store and object of the route
-
-    def __init__(self, name, distance):
-        self.name = name
-        self.distance = distance
+def get_trips_from_db():
+    result = []
+    trips = Tur.query.order_by(Tur.aid).all() # mulig feil her
+    for trip in trips:
+        result.append({
+        "aid": trip.aid,
+        "name": trip.name,
+        "distance": trip.distance,
+        "date": trip.date
+        })
+    return result
         
-class UserAdmin(db.Model):
-    __tablename__ = 'user'
-    username = db.Column(db.String(50), primary_key=True)
-    password = db.Column(db.String(200))
-
-    def __init__(self, username, password):
-        self.username = username
-        self.set_password(password)
-
-    def set_password(self, password):
-         self.password = generate_password_hash(password)
-
-    def check_password(self, password):
-        return check_password_hash(self.password, password)
-
-def add_user(username, password):
-    user = UserAdmin(username, password)
-    db.session.add(user)
-    db.session.commit()
-
-
-def add_testUser():
-    username = "ditstaar"
-    password = "ditstaar"
-    if not_inDatabase(username):
-        u = UserAdmin(username, password)
-        db.session.add(u)
-        db.session.commit()
 
 def getUsername():
     return session["username"]
-
 
 def in_session():
     if 'username' in session:
@@ -69,104 +49,57 @@ def in_session():
     return False
 
 
-def valid_login(username, password):
-    user = UserAdmin.query.filter_by(username=username).first()
-    if user:
-        return user.check_password(password)
-    return False
-
-
-def not_inDatabase(username):
-    query = UserAdmin.query.filter_by(username=username)
-    for each in query:
-        if username == each.username:
-            return False
-    return True
-
-@app.route('/')
-def index():
-    if in_session():
-        return render_template("index.html", username=getUsername())
-    flash("You have to log in")
-    return render_template("login.html")
-
 @app.route('/adventure', methods=['POST', 'GET'])
 def storeAdventure():
     if request.method == 'POST':
         name = request.form.get("name")
         distance = request.form.get("distance")
-        newTrip = Tur(name=name, distance=distance)
+        route = request.form.get("route")
+
+        if name == "" or distance == "":
+            return json.dumps({"status": "failure"})
+
+        date = datetime.datetime.now()
+        strdate = date.strftime('%d%m/%Y %H:%M:%S')
+        newTrip = Tur(name=name, distance=distance, date=strdate, route=route)
         db.session.add(newTrip)
         db.session.commit()
-        # flash(u'Saved to database', 'alert-success')
-        return json.dumps({"status": "success", "name": name, "distance": distance})
+        return json.dumps({"status": "success", "name": name, "distance": distance, "route": route})
+
     if request.method == 'GET':
-        # get stuff out of the database
         response = []
         tripData = Tur.query.all()
-        count = 0
+        count = 1
         pagelimit = 5
+
         for trip in tripData:
-            count += 1
             response.append({
+                "aid": trip.aid,
+                "name": trip.name,
+                "distance": trip.distance,
+                "date": trip.date,
+                "route": trip.route,
                 "page": math.floor(count / pagelimit) + 1,
                 "pagelimit": pagelimit,
-                "totalrecords": count,
-                "name": trip.name,
-                "distance": trip.distance
+                "totalrecords": count
             })
+            count += 1
+
         return json.dumps(response)
-
-
-@app.route('/login', methods=["GET", "POST"])
-def login():
-    if request.method == "POST":
-        time.sleep(1.5) # vis en loading gif
-        username = request.form.get("username")
-        password = request.form.get("password")
-        if valid_login(username, password):
-            session['username'] = username
-            return render_template("index.html", username=username)
-        else:
-            flash("You have to log in")
-            return render_template("login.html")
-    return render_template("login.html")
-
-
-@app.route("/logout")
-def logout():
-    session.pop('username', None)
-    return render_template("login.html")
-
-def getTrips():
-    data = []
-    query = Tur.query.all()
-    for trip in query:
-        data.append({
-            "name": trip.name,
-            "distance": trip.distance
-        })
-    return data
-
-
-@app.route('/map')
-def map():
-    trips = getTrips()
-    if in_session():
-        return render_template('map.html', username=getUsername(), trips=trips)
-    flash("You have to log in")
-    return render_template("index.html")
 
 # handle login failed
 @app.errorhandler(401)
 def page_not_found(e):
     return Response('<p>Login failed</p>')
 
-# User = User(1)
-# @login_manager.user_loader
-# def load_user(userid):
-#     return User(userid)
-
+# test user
+# def add_testUser():
+#     username = "ditstaar"
+#     password = "ditstaar"
+#     if User.user_not_in_db(username):
+#         u = Users(username, password)
+#         db.session.add(u)
+#         db.session.commit()
 
 if __name__ == '__main__':
     #db.create_all()

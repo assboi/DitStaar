@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}hjem{% endblock %}
+{% block head %}
+{{ super() }}
+{% endblock %}
+
+{% block content %}
+<!-- make awsome table -->
+<div class="container-fluid">
+    <table class="table table-hover table-light mb-5">
+        <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Dato</th>
+                <th scope="col">Navn</th>
+                <th scope="col">Distance</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% if trips %}
+        {% for trip in trips%}
+        <tr>
+            <td scope="row">{{ trip.aid }}</td>
+            <td>{{ trip.date }}</td>
+            <td>{{ trip.name }}</td>
+            <td>{{ trip.distance }}</td>
+        </tr>   
+        {% endfor %}
+        {% endif %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

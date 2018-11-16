@@ -6,28 +6,33 @@
 {% endblock %}
 
 {% block content %}
-    <div class="form-row justify-content-center mt-3">
-        <div class="col-3">
-            <input id="address" type="text" class="form-control" placeholder="Sandnes">
+    <div class="container">
+        <div class="form-row justify-content-center mt-3">
+            <div class="col">
+                <input id="address" type="text" class="form-control" placeholder="Sandnes">
+            </div>
+            <button id="go" type="submit" class="btn btn-sm btn-dark ml-2 pr-3 pl-3"> Søk På Sted </button>
+            <button id="slett" type="submit" class="btn btn-sm btn-danger ml-2 pr-3 pl-3"> Slett Rute </button>
         </div>
-            <button id="go" type="submit" class="btn btn-sm btn-dark ml-2"> GO </button>
-            <button id="slett" type="submit" class="btn btn-sm btn-danger ml-2 pr-2 pl-2"> X </button>
     </div>
 
     <div class="container mt-3">
         <div id="map" style="width: 100%; height: 500px;"></div>
     </div>
-    <div class="form-row justify-content-center mt-3">
-        <div class="col-4">
-            <input id="nameInput" autocomplete="off" type="text" class="form-control" placeholder="Navn på tur">
-        </div>
-        <div class="col-3">
-            <input id="distance" type="text" autocomplete="off" class="form-control" placeholder="0.00 km" disabled>
-        </div>
-        <button id="savebtn" class="btn btn-sm btn-dark ml-2">Lagre</button>
-    </div>
 
     <div class="container">
+        <div class="form-row justify-content-center mt-3">
+            <div class="col">
+                <input id="nameInput" autocomplete="off" type="text" class="form-control" placeholder="Navn på tur">
+            </div>
+            <div class="col">
+                <input id="distance" type="text" autocomplete="off" class="form-control" placeholder="0.00 km" disabled>
+            </div>
+            <button id="savebtn" class="btn btn-sm btn-dark ml-2 pr-3 pl-3">Lagre</button>
+        </div>
+    </div>
+
+    <!-- <div class="container">
         <div class="row justify-content-center">
             <div class="col-6">
                 <ul id="turListe" class="list-group mt-5">
@@ -40,7 +45,7 @@
                 <button id="prev" class="rounded btn btn-sm btn-secondary mr-1"> << prev </button>
                 <button id="next" class="rounded btn btn-sm btn-secondary ml-1"> next >> </button>
             </div>
-        </div>
+        </div> -->
 
 
 {% endblock %}

@@ -3,46 +3,65 @@ var poly; // the line
 var markers = [];
 var path;
 var storage = [];
+var coord = [];
 
 $(function () {
     initMap();
-    deletebtn = $('#slett');
-    searchbtn = $("#go");
-    save = $("#savebtn");
-    list = $('#turListe');
+    fetchData()
+
+    // TODO RYDD OPP I KODE!!
+    // Noe som ikke stemmer når markes blir lagt inn igjen
+
+    $("#turListe").on("click", ".list-group-item", function () {
+        // get the id from the table
+        var id = $(this).text().split(".")[0]; 
+        var temp = coord[id].replace(/\(/g, "").replace(/\)/g, " ").replace(/,/g, "");
+        temp = temp.split(" ");
+        for (i=0 ; i < temp.length ; i+=2 ) {
+            var latlng = new google.maps.LatLng(temp[i], temp[i+1]);
+            addMarker(latlng);
+            // how do i draw the polyline??
+        }
+    });
 
     var page = 1,
         pagelimit = 5,
-        totalrecords = 0;
-
-    fetchData()
+        totalrecords = 1;
 
     $("#prev").on("click", function() {
         if (page > 1){
             page--;
-            list.empty();
+            $('#turListe').empty();
             fetchData()
         }
-        // console.log("page="+page+" pagelimit="+ pagelimit+ " totalrecods="+ totalrecords)
+    
     });
 
     $("#next").on("click", function() {
         if (page * pagelimit < totalrecords){
             page++;
-            list.empty();
+            $('#turListe').empty();
             fetchData()
         }
-        // console.log("page=" + page + " pagelimit=" + pagelimit + " totalrecods=" + totalrecords)
     });
 
-    deletebtn.on("click", function () {
+    $('#slett').on("click", function () {
         clearMarkers();
         removePoly();
         // have to initialise poly after removing
         initPoly();
         // sette distanse aktivt til 0.00km
         $('#distance').val("0.00 km");
-    });    
+    });
+
+    $("#savebtn").on("click", function(){
+        saveData();
+    });
+    $("#nameInput").keypress(function(e){
+        if (e.which == 13) {
+            saveData();
+        }
+    });
 
 function fetchData() {
     $.ajax({
@@ -51,13 +70,11 @@ function fetchData() {
         dataType: 'json',
         success: function(trips) {
             trips.forEach(function(trip) {
+                coord.push(trip.route)
                 totalrecords = trip.totalrecords;
-                // console.log("page.trip:"+trip.page+" page:"+page)
-                console.log(trip.name)
                 if (trip.page === page){
-                    console.log()
-                    list.append('<button type="button" class="list-group-item list-group-item-action">'
-                    + trip.name + ', ' + trip.distance + '</button>');
+                    $('#turListe').append('<button type="button" class="list-group-item list-group-item-action">'
+                    + trip.aid + ". " + trip.name + ' - ' + trip.distance +'</button>');
                 }
             });
         },
@@ -68,47 +85,52 @@ function fetchData() {
     });
 }
 
-    save.on("click", function() {
-        // nullstill felter
-        $('#distance').val("0.00 km");
-        $("#nameInput").val("Navn på tur")
-        // store polyline
-        str = ""
-        for (i=0; i<markers.length; i++) {
-            var temp = markers[i].getPosition();
-            str += temp + " : "
-        }
+function saveData(){
+    route = "";
+    for (i = 0; i < markers.length; i++) {
+           route += markers[i].getPosition();
+    }
+    // data to send to save in database
+    var adventure = {
+        "name": $("#nameInput").val(),
+        "distance": $('#distance').val(),
+        "route": route
+    };
 
-        // Post request to save in database
-        var adventure = {
-            "name": $("#nameInput").val(),
-            "distance": $('#distance').val(),
-            "route": str
-        };
-        $.ajax({
-            url: "/adventure",
-            data: adventure,
-            type: "POST",
-            dataType: 'json',
-            success: function(data) {
-                list.append('<button type="button" class="list-group-item list-group-item-action">'
-                            + data.name +', '+ data.distance +'</button>');
-            },
-            error: function(error) {
-                alert("error saving to database")
-                console.log(error)
+    $.ajax({
+        url: "/adventure",
+        data: adventure,
+        type: "POST",
+        dataType: 'json',
+        success: function (trip) {
+            if (trip.page === page) {
+                totalrecords = trip.totalrecords;
+                $('#turListe').append('<button type="button" class="list-group-item list-group-item-action">'
+                    + trip.name + ' - ' + trip.distance + '</button>');
             }
-        });
+        },
+        error: function (error) {
+            alert("error saving to database")
+            console.log(error)
+        }
     });
-
-
+    // nullstill felter
+    $("#nameInput").val("Navn på tur")
+}
 
     map.addListener("click", function(){
         $('#distance').val("" + getdistance() + " km");
     })
 
     var geocoder = new google.maps.Geocoder();
-    searchbtn.on('click', function () {
+
+    $("#address").keypress(function(e) {
+        if (e.which == 13) {
+            geocodeAddress(geocoder, map);
+        }
+    });
+
+    $("#go").on('click', function () {
         geocodeAddress(geocoder, map);
     });
 });
@@ -166,20 +188,19 @@ function geocodeAddress(geocoder, map) {
     });
 }
 
-function addMarker(location) {
+function addMarker(latlng) {
     var marker = new google.maps.Marker({
-        position: location,
+        position: latlng,
         map: map
     });
     markers.push(marker);
 }
-
+        
 function clearMarkers() {
     for (var i = 0; i < markers.length; i++) {
         markers[i].setMap(null);
     }
 }
-
 
 function addLatLng(event) {
     path = poly.getPath();
